@@ -7,10 +7,10 @@
 
 // Lilygo T5 4.7inch has a resolution of 960 x 540
 
-const char* api_url = "http://192.168.1.107:12345/image";
+const char* api_url = "http://192.168.1.107:12345/servenyt";
 
-const char* ssid     = "whistler";
-const char* password = "samloveswhistler";
+const char* ssid     = "hey Vsauce Michael here";
+const char* password = "majura129";
 
 // how long we'll sleep (minutes)
 long SleepDuration   = 720;
