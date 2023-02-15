@@ -2,12 +2,13 @@
 #include <WiFi.h>
 #include <HTTPClient.h>
 #include <SPI.h>
+#include <ArduinoJson.h>
 
 #include "epd_driver.h"
 
 // Lilygo T5 4.7inch has a resolution of 960 x 540
 
-const char* api_url = "http://112.213.36.7:12345/servegym";
+ String api_url = "http://112.213.36.7:12345/servegym";
 
 const char* ssid     = "hey Vsauce Michael here";
 const char* password = "majura129";
@@ -72,6 +73,27 @@ void BeginSleep() {
   Serial.println("Entering " + String(SleepTimer) + " (secs) of sleep time");
   Serial.println("Starting deep-sleep period...");
   esp_deep_sleep_start();  // Sleep for e.g. 30 minutes
+}
+
+
+void getPrefs(){
+  HTTPClient http;
+  // Send request
+  http.useHTTP10(true);
+  http.begin("http://112.213.36.7:12345/prefs");
+  http.GET();
+  // Parse response
+  DynamicJsonDocument doc(2048);
+  deserializeJson(doc, http.getStream());
+  
+  // Read values
+//  *api_url = doc["MODE"].as<char>();
+  api_url = doc["MODE"].as<String>();
+  SleepDuration = doc["SLEEPTIME"].as<long>();
+  
+  // Disconnect
+  http.end();
+  
 }
 
 void QueryServer()
@@ -147,7 +169,8 @@ void setup()
   // start WIFI
   if (StartWiFi() == WL_CONNECTED)
   {
-    // wifi connected successfully, get the image from our server
+    // wifi connected successfully, get prefs, then the image from our server
+    getPrefs();
     QueryServer();
     // image data resides in imagebuffer now, copy it over to the framebuffer
     Rect_t area = {

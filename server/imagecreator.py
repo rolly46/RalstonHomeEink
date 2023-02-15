@@ -101,7 +101,8 @@ def fetchNDrawGym():
     # draw the progress bar to given location, width, progress and color
     # inputpic, x, y,w,h,progress
     d = drawProgressBar(d, 10, 480, 490, 25, gymload/100)
-    out.save("GYMLoadNow.png")
+    outroate = out.transpose(Image.ROTATE_90)
+    outroate.save("GYMLoadNow.png")
     img_path = "GYMLoadNow.png"
     return cv2.imread(img_path, cv2.IMREAD_GRAYSCALE)
 
@@ -109,17 +110,20 @@ def fetchNDrawGym():
 
 # HELPER Functions
 # https://stackoverflow.com/questions/66886200/how-do-you-make-a-progress-bar-and-put-it-on-an-image
-def drawProgressBar(d, x, y, w, h, progress, bg="black", fg="red"):
+def drawProgressBar(d, x, y, w, h, progress, bg="grey", fg="black"):
     # draw background
-    d.ellipse((x+w, y, x+h+w, y+h), fill=bg)
-    d.ellipse((x, y, x+h, y+h), fill=bg)
-    d.rectangle((x+(h/2), y, x+w+(h/2), y+h), fill=bg)
+    # d.ellipse((x+w, y, x+h+w, y+h),outline ="red")
+    # d.ellipse((x, y, x+h, y+h), outline ="red")
+    d.rectangle((x+(h/2), y, x+w+(h/2), y+h), outline ="black")
+    
 
     # draw progress bar
     w *= progress
-    d.ellipse((x+w, y, x+h+w, y+h),fill=fg)
-    d.ellipse((x, y, x+h, y+h),fill=fg)
+    # d.ellipse((x+w, y, x+h+w, y+h),fill=fg)
+    # d.ellipse((x, y, x+h, y+h),fill=fg)
     d.rectangle((x+(h/2), y, x+w+(h/2), y+h),fill=fg)
+    font = ImageFont.load_default().font
+    d.text((5, 5),"CISAC Capacity at "+str(progress)+"%",(0,0,0),font=font)
 
     return d
 
