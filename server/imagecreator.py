@@ -100,7 +100,7 @@ def fetchNDrawGym():
 
     # draw the progress bar to given location, width, progress and color
     # inputpic, x, y,w,h,progress
-    d = drawProgressBar(d, 10, 480, 490, 25, gymload/100)
+    d = drawProgressBar(d, 10, 480, 520, 100, gymload/100)
     outroate = out.transpose(Image.ROTATE_90)
     outroate.save("GYMLoadNow.png")
     img_path = "GYMLoadNow.png"
@@ -114,14 +114,16 @@ def drawProgressBar(d, x, y, w, h, progress, bg="grey", fg="black"):
     # draw background
     # d.ellipse((x+w, y, x+h+w, y+h),outline ="red")
     # d.ellipse((x, y, x+h, y+h), outline ="red")
-    d.rectangle((x+(h/2), y, x+w+(h/2), y+h), outline ="black")
-    
+    # d.rectangle((x+(h/2), y, x+w+(h/2), y+h), outline ="black")
+    d.rectangle((x, y, x+w, y+h), outline ="black")
 
     # draw progress bar
     w *= progress
     # d.ellipse((x+w, y, x+h+w, y+h),fill=fg)
     # d.ellipse((x, y, x+h, y+h),fill=fg)
-    d.rectangle((x+(h/2), y, x+w+(h/2), y+h),fill=fg)
+    # d.rectangle((x+(h/2), y, x+w+(h/2), y+h),fill=fg)
+    d.rectangle((x, y, x+w, y+h),fill=fg)
+
     font = ImageFont.load_default().font
     d.text((5, 5),"CISAC Capacity at "+str(progress)+"%",(0,0,0),font=font)
 
