@@ -86,7 +86,7 @@ def serve_prefs():
     else:
         # Get the current time
         now = datetime.now()
-        print("SYSTEM TIME SHOWS: " + now)
+        print("SYSTEM TIME SHOWS: " + now.strftime("%m/%d/%Y, %H:%M:%S"))
         # Set the target time for 3pm
         target_time = now.replace(hour=15, minute=1, second=0, microsecond=0)
         # If current time is already past 3pm, add one day to the target time
