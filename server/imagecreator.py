@@ -15,13 +15,15 @@ from dotenv import dotenv_values
 import json 
 import math
 
-from datetime import datetime  
+from datetime import datetime, time
 
 
 app = Flask(__name__)
 
 # local config
 config = dotenv_values(".env")
+
+
 
 
 
@@ -61,9 +63,45 @@ def serve_nyt():
 
     return response
 
-# Endpoint for Eink Prefs
+# Endpoint for Eink Prefs (Old)
+# @app.route("/prefs")
+# def serve_prefs():
+#     response = app.response_class(
+#             response=json.dumps(config),
+#             status=200,
+#             mimetype='application/json'
+#         )
+#     return response
+
+# Based on time and what's served (3-8pm GYM, NYT Outside of these times)
 @app.route("/prefs")
 def serve_prefs():
+    
+    config = {}
+    
+    if (is_time_between(time(10,30), time(20,00))):
+        config = {
+        "MODE":"http://112.213.36.7:12345/servegym",
+        "SLEEPTIME" : 15
+        }
+        
+    else:
+        # Get the current time
+        now = datetime.datetime.now()
+        # Set the target time for 3pm
+        target_time = now.replace(hour=15, minute=1, second=0, microsecond=0)
+        # If current time is already past 3pm, add one day to the target time
+        if now >= target_time:
+            target_time = target_time + datetime.timedelta(days=1)
+        # Calculate the difference between now and the target time in minutes
+        time_difference = target_time - now
+        sleeptime = int(time_difference.total_seconds() / 60)
+        config = {
+        "MODE":"http://112.213.36.7:12345/servenyt",
+        "SLEEPTIME" : sleeptime
+        }
+    
+        
     response = app.response_class(
             response=json.dumps(config),
             status=200,
@@ -104,7 +142,7 @@ def fetchNDrawGym():
 
     # draw the progress bar to given location, width, progress and color
     # x, y, w, h, progress
-    d = drawProgressBar(d, 10*upscaling, 320*upscaling, 520*upscaling, 600*upscaling, gymload,upscaling)
+    d = drawProgressBar(d, 14*upscaling, 320*upscaling, 520*upscaling, 600*upscaling, gymload,upscaling)
     outroate = out.transpose(Image.ROTATE_90)
     outroate.save("GYMLoadNow.png")
     img_path = "GYMLoadNow.png"
@@ -146,6 +184,15 @@ def serve_pil_image(pil_img):
     img_io.seek(0)
     return send_file(img_io, mimetype='image/jpeg')
 # ~~~~~~~~~~~~~~~~~~
+
+# https://stackoverflow.com/questions/10048249/how-do-i-determine-if-current-time-is-within-a-specified-range-using-pythons-da
+def is_time_between(begin_time, end_time, check_time=None):
+    # If check time is not given, default to current UTC time
+    check_time = check_time or datetime.utcnow().time()
+    if begin_time < end_time:
+        return check_time >= begin_time and check_time <= end_time
+    else: # crosses midnight
+        return check_time >= begin_time or check_time <= end_time
 
 
 
