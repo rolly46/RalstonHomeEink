@@ -77,7 +77,7 @@ def serve_prefs():
     
     config = {}
     
-    if (is_time_between(time(10,30), time(20,00))):
+    if (isNowInTimePeriod(time(15,00), time(20,00), datetime.now().time())):
         config = {
         "MODE":"http://112.213.36.7:12345/servegym",
         "SLEEPTIME" : 15
@@ -185,13 +185,12 @@ def serve_pil_image(pil_img):
 # ~~~~~~~~~~~~~~~~~~
 
 # https://stackoverflow.com/questions/10048249/how-do-i-determine-if-current-time-is-within-a-specified-range-using-pythons-da
-def is_time_between(begin_time, end_time, check_time=None):
-    # If check time is not given, default to current UTC time
-    check_time = check_time or datetime.now()
-    if begin_time < end_time:
-        return check_time >= begin_time and check_time <= end_time
-    else: # crosses midnight
-        return check_time >= begin_time or check_time <= end_time
+def isNowInTimePeriod(startTime, endTime, nowTime): 
+    if startTime < endTime: 
+        return nowTime >= startTime and nowTime <= endTime 
+    else: 
+        #Over midnight: 
+        return nowTime >= startTime or nowTime <= endTime 
 
 
 
