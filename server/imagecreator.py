@@ -9,12 +9,10 @@ import io
 from utils import prepare_image
 # need pip install pdf-info as well
 # also other dependacies here https://github.com/Belval/pdf2image
-from datetime import datetime
 import pytz
 from dotenv import dotenv_values
 import json 
 import math
-
 from datetime import datetime, time
 
 
