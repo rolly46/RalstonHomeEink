@@ -90,7 +90,7 @@ def serve_prefs():
         target_time = now.replace(hour=15, minute=1, second=0, microsecond=0)
         # If current time is already past 3pm, add one day to the target time
         if now >= target_time:
-            target_time = target_time + datetime.timedelta(days=1)
+            target_time = target_time + timedelta(days=1)
         # Calculate the difference between now and the target time in minutes
         time_difference = target_time - now
         sleeptime = int(time_difference.total_seconds() / 60)
