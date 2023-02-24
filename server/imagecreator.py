@@ -13,6 +13,9 @@ from datetime import datetime
 import pytz
 from dotenv import dotenv_values
 import json 
+import math
+
+from datetime import datetime  
 
 
 app = Flask(__name__)
@@ -93,14 +96,15 @@ def fetchNDrawGym():
     gymload = float(soup.find_all("progress", {'class':'html5'})[0]['value'])
     print(gymload)
     
+    upscaling = 2
     
     # create image or load your existing image with out=Image.open(path). Computed to the resolution of the Eink. 
-    out = Image.new("RGB", (540, 960), (255, 255, 255))
+    out = Image.new("RGB", (540*upscaling, 960*upscaling), (255, 255, 255))
     d = ImageDraw.Draw(out)
 
     # draw the progress bar to given location, width, progress and color
-    # inputpic, x, y,w,h,progress
-    d = drawProgressBar(d, 10, 480, 520, 100, gymload/100)
+    # x, y, w, h, progress
+    d = drawProgressBar(d, 10*upscaling, 320*upscaling, 520*upscaling, 600*upscaling, gymload,upscaling)
     outroate = out.transpose(Image.ROTATE_90)
     outroate.save("GYMLoadNow.png")
     img_path = "GYMLoadNow.png"
@@ -110,22 +114,26 @@ def fetchNDrawGym():
 
 # HELPER Functions
 # https://stackoverflow.com/questions/66886200/how-do-you-make-a-progress-bar-and-put-it-on-an-image
-def drawProgressBar(d, x, y, w, h, progress, bg="grey", fg="black"):
+def drawProgressBar(d, x, y, w, h, progress, upscalingtext,bg="grey", fg="black"):
     # draw background
-    # d.ellipse((x+w, y, x+h+w, y+h),outline ="red")
-    # d.ellipse((x, y, x+h, y+h), outline ="red")
-    # d.rectangle((x+(h/2), y, x+w+(h/2), y+h), outline ="black")
-    d.rectangle((x, y, x+w, y+h), outline ="black")
+    d.rectangle((x, y, x+w, y+h), outline ="black", width=3)
 
     # draw progress bar
-    w *= progress
-    # d.ellipse((x+w, y, x+h+w, y+h),fill=fg)
-    # d.ellipse((x, y, x+h, y+h),fill=fg)
-    # d.rectangle((x+(h/2), y, x+w+(h/2), y+h),fill=fg)
-    d.rectangle((x, y, x+w, y+h),fill=fg)
+    # w *= progress
+    # box coords (x1,y1,x2,y2)
+    d.rectangle((x*progress/100, y, (x+w)*progress/100, y+h),fill=fg)
 
-    font = ImageFont.load_default().font
-    d.text((5, 5),"CISAC Capacity at "+str(progress)+"%",(0,0,0),font=font)
+    fonttitle = ImageFont.truetype("kanitbold.ttf", 50*upscalingtext)
+    fontbody = ImageFont.truetype("kanitlight.ttf", 30*upscalingtext)
+    # TITLE
+    d.text((98*upscalingtext, 5*upscalingtext),"Is CISAC Busy?",(0,0,0),font=fonttitle)
+    # CAP TEXT
+    d.text((195*upscalingtext, 270*upscalingtext),"Capacity currently at "+str(math.ceil(progress))+"%",(0,0,0),font=fontbody)
+    # TIME TEXT
+    current_time = datetime.now()
+    # date_time = datetime.fromtimestamp(current_time)
+    str_date_time = current_time.strftime("%d-%m, %H:%M")
+    d.text((375*upscalingtext, 917*upscalingtext),str_date_time,(0,0,0),font=fontbody)
 
     return d
 
