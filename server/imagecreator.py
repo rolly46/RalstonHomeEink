@@ -29,7 +29,6 @@ config = dotenv_values(".env")
 # Endpoint for Club Lime Gym Utilisation 
 @app.route('/servegym')
 def serve_gym():
-# might be needed bad code 
     logo_img, logo_img_width, logo_img_height = prepare_image(fetchNDrawGym())
     global i
 
@@ -47,7 +46,6 @@ def serve_gym():
 # Endpoint for NYT Front Page
 @app.route("/servenyt")
 def serve_nyt():
-# might be needed bad code 
     logo_img, logo_img_width, logo_img_height = prepare_image(fetchNYPageWSave())
     global i
 
@@ -125,6 +123,15 @@ def fetchNYPageWSave():
     img_path = "NYTToday.jpg"
     return cv2.imread(img_path, cv2.IMREAD_GRAYSCALE)
 
+def fetchGARDPageWSave():
+    today = datetime.now(tz=pytz.timezone('US/Hawaii'))
+    pdf = requests.get("https://static01.nyt.com/images/"+today.strftime('%Y')+"/"+today.strftime('%m')+"/"+today.strftime('%d')+"/nytfrontpage/scan.pdf",stream=True,timeout=30)
+    image = pdf2image.convert_from_bytes(pdf.raw.read(),50)
+    spinImage = image[0].transpose(Image.ROTATE_90)
+    spinSave = spinImage.save("NYTToday.jpg")
+    img_path = "NYTToday.jpg"
+    return cv2.imread(img_path, cv2.IMREAD_GRAYSCALE)
+
 def fetchNDrawGym():
     # get gym load value 
     URL = "https://www.clublime.com.au/default/includes/display_objects/custom/members/remote/clubload.cfm?cid=1&showone=&isMobile=false"
@@ -141,12 +148,25 @@ def fetchNDrawGym():
 
     # draw the progress bar to given location, width, progress and color
     # x, y, w, h, progress
-    d = drawProgressBar(d, 14*upscaling, 320*upscaling, 520*upscaling, 600*upscaling, gymload,upscaling)
+    d = drawProgressBar(d, 100*upscaling, 620*upscaling, 420*upscaling, 300*upscaling, gymload,upscaling)
     outroate = out.transpose(Image.ROTATE_90)
     outroate.save("GYMLoadNow.png")
     img_path = "GYMLoadNow.png"
     return cv2.imread(img_path, cv2.IMREAD_GRAYSCALE)
 
+def fetchClassTimes():
+    
+    classdetails = {}
+    # get gym load value 
+    today = datetime.now()
+    URL = "https://www.clublime.com.au/default/includes/display_objects/custom/classes/remote/classes.cfm?classid=80&isMobile=false&classdate=%7Bts%20%2720"+today.strftime('%y-%m-%d')+"%2000:00:00%27%7D&locationid=3&Region=ACT&show=lime&t=9E8B337C534A3AC0F4E352E5885E32E9FB917A21&{%22t%22:%229E8B337C534A3AC0F4E352E5885E32E9FB917A21%22}"
+    print(UnicodeTranslateError)
+    r = requests.get(URL)  
+    soup = BeautifulSoup(r.content, 'html.parser') # If this line causes an error, run 'pip install html5lib' or install html5lib
+    strongs = soup.findAll('strong')
+    print("Contents is: " + str(strongs))
+    
+    return classdetails
 
 
 # HELPER Functions
@@ -161,16 +181,17 @@ def drawProgressBar(d, x, y, w, h, progress, upscalingtext,bg="grey", fg="black"
     d.rectangle((x*progress/100, y, (x+w)*progress/100, y+h),fill=fg)
 
     fonttitle = ImageFont.truetype("kanitbold.ttf", 50*upscalingtext)
+    fontbodybold = ImageFont.truetype("kanitbold.ttf", 30*upscalingtext)
     fontbody = ImageFont.truetype("kanitlight.ttf", 30*upscalingtext)
     # TITLE
     d.text((98*upscalingtext, 5*upscalingtext),"Is CISAC Busy?",(0,0,0),font=fonttitle)
     # CAP TEXT
-    d.text((195*upscalingtext, 270*upscalingtext),"Capacity currently at "+str(math.ceil(progress))+"%",(0,0,0),font=fontbody)
+    d.text((136*upscalingtext, 570*upscalingtext),"Capacity currently at "+str(math.ceil(progress))+"%",(0,0,0),font=fontbodybold)
     # TIME TEXT
     current_time = datetime.now()
     # date_time = datetime.fromtimestamp(current_time)
     str_date_time = current_time.strftime("%d-%m, %H:%M")
-    d.text((375*upscalingtext, 917*upscalingtext),str_date_time,(0,0,0),font=fontbody)
+    d.text((240*upscalingtext, 917*upscalingtext),"Updated: " + str_date_time,(0,0,0),font=fontbody)
 
     return d
 
