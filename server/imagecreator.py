@@ -148,7 +148,7 @@ def fetchNDrawGym():
 
     # draw the progress bar to given location, width, progress and color
     # x, y, w, h, progress
-    d = drawProgressBar(d, 100*upscaling, 620*upscaling, 420*upscaling, 300*upscaling, gymload,upscaling)
+    d = drawProgressBar(d, 35*upscaling, 620*upscaling, 475*upscaling, 300*upscaling, gymload,upscaling)
     outroate = out.transpose(Image.ROTATE_90)
     outroate.save("GYMLoadNow.png")
     img_path = "GYMLoadNow.png"
@@ -173,25 +173,27 @@ def fetchClassTimes():
 # https://stackoverflow.com/questions/66886200/how-do-you-make-a-progress-bar-and-put-it-on-an-image
 def drawProgressBar(d, x, y, w, h, progress, upscalingtext,bg="grey", fg="black"):
     # draw background
-    d.rectangle((x, y, x+w, y+h), outline ="black", width=3)
+    d.rectangle((x, y, x+w, y+h), outline ="black", width=11)
 
     # draw progress bar
     # w *= progress
     # box coords (x1,y1,x2,y2)
-    d.rectangle((x*progress/100, y, (x+w)*progress/100, y+h),fill=fg)
+    d.rectangle((x, y, (x+w)*progress/100, y+h),fill=fg)
 
-    fonttitle = ImageFont.truetype("kanitbold.ttf", 50*upscalingtext)
+    fonttitle = ImageFont.truetype("kanitbold.ttf", 100*upscalingtext)
     fontbodybold = ImageFont.truetype("kanitbold.ttf", 30*upscalingtext)
     fontbody = ImageFont.truetype("kanitlight.ttf", 30*upscalingtext)
     # TITLE
-    d.text((98*upscalingtext, 5*upscalingtext),"Is CISAC Busy?",(0,0,0),font=fonttitle)
+    d.text((245*upscalingtext, 5*upscalingtext),"Is",(0,0,0),font=fonttitle)
+    d.text((130*upscalingtext, 105*upscalingtext),"CISAC",(0,0,0),font=fonttitle)
+    d.text((130*upscalingtext, 205*upscalingtext),"Busy?",(0,0,0),font=fonttitle)
     # CAP TEXT
-    d.text((136*upscalingtext, 570*upscalingtext),"Capacity currently at "+str(math.ceil(progress))+"%",(0,0,0),font=fontbodybold)
+    d.text((122*upscalingtext, 570*upscalingtext),"Capacity currently at "+str(math.ceil(progress))+"%",(0,0,0),font=fontbodybold)
     # TIME TEXT
     current_time = datetime.now()
     # date_time = datetime.fromtimestamp(current_time)
     str_date_time = current_time.strftime("%d-%m, %H:%M")
-    d.text((240*upscalingtext, 917*upscalingtext),"Updated: " + str_date_time,(0,0,0),font=fontbody)
+    d.text((227*upscalingtext, 917*upscalingtext),"Updated: " + str_date_time,(0,0,0),font=fontbody)
 
     return d
 
